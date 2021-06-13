@@ -14,7 +14,6 @@
     <description>Presto - Gateway Service</description>
 
     <properties>
-        <air.main.basedir>${project.parent.basedir}</air.main.basedir>
         <main-class>io.prestosql.gateway.PrestoGateway</main-class>
         <ehcache.version>3.8.1</ehcache.version>
         <activejdbc.version>2.4-j8</activejdbc.version>
@@ -210,9 +209,20 @@
             <groupId>io.prestosql</groupId>
             <artifactId>presto-parser</artifactId>
         </dependency>
+
         <dependency>
             <groupId>io.prestosql</groupId>
             <artifactId>presto-spi</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>io.prestosql</groupId>
+            <artifactId>presto-resource-group-managers</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>io.prestosql</groupId>
+            <artifactId>presto-plugin-toolkit</artifactId>
         </dependency>
 
         <dependency>
@@ -239,20 +249,10 @@
             <scope>test</scope>
         </dependency>
 
-        <!--        <dependency>
-                    <groupId>io.prestosql</groupId>
-                    <artifactId>presto-main</artifactId>
-                    <scope>test</scope>
-                </dependency>-->
-
         <dependency>
             <groupId>io.prestosql</groupId>
             <artifactId>presto-tpch</artifactId>
             <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>io.prestosql</groupId>
-            <artifactId>presto-plugin-toolkit</artifactId>
         </dependency>
 
         <dependency>
@@ -266,6 +266,7 @@
             <artifactId>presto-jdbc</artifactId>
             <scope>test</scope>
         </dependency>
+
         <dependency>
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
@@ -286,11 +287,6 @@
             <groupId>com.zaxxer</groupId>
             <artifactId>HikariCP</artifactId>
             <version>3.4.5</version>
-        </dependency>
-
-        <dependency>
-            <groupId>io.prestosql</groupId>
-            <artifactId>presto-resource-group-managers</artifactId>
         </dependency>
 
         <dependency>
