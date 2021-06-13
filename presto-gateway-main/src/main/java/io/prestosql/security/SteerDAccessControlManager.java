@@ -7,6 +7,7 @@ import com.google.common.collect.ImmutableSet;
 import io.airlift.log.Logger;
 import io.airlift.stats.CounterStat;
 import io.prestosql.connector.CatalogName;
+import io.prestosql.eventlistener.EventListenerManager;
 import io.prestosql.metadata.QualifiedObjectName;
 import io.prestosql.plugin.base.security.AllowAllSystemAccessControl;
 import io.prestosql.plugin.base.security.FileBasedSystemAccessControl;
@@ -73,9 +74,9 @@ public class SteerDAccessControlManager
     private final CounterStat authorizationFail = new CounterStat();
 
     @Inject
-    public SteerDAccessControlManager(TransactionManager transactionManager, AccessControlConfig config)
+    public SteerDAccessControlManager(TransactionManager transactionManager, EventListenerManager eventListenerManager, AccessControlConfig config)
     {
-        super(transactionManager, config);
+        super(transactionManager, eventListenerManager, config);
         this.configFiles = ImmutableList.copyOf(config.getAccessControlFiles());
         addSteerDSystemAccessControlFactory(new AllowAllSystemAccessControl.Factory());
         addSteerDSystemAccessControlFactory(new ReadOnlySystemAccessControl.Factory());
