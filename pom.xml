@@ -5,12 +5,12 @@
     <parent>
         <groupId>io.airlift</groupId>
         <artifactId>airbase</artifactId>
-        <version>101</version>
+        <version>110</version>
     </parent>
 
-    <groupId>io.prestosql</groupId>
-    <artifactId>presto-root</artifactId>
-    <version>334-SNAPSHOT</version>
+    <groupId>io.trino</groupId>
+    <artifactId>trino-root</artifactId>
+    <version>357-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <name>presto-root</name>
@@ -34,42 +34,12 @@
     </scm>
 
     <properties>
-        <air.main.basedir>${project.basedir}</air.main.basedir>
-
-        <air.check.skip-spotbugs>true</air.check.skip-spotbugs>
-        <air.check.skip-pmd>true</air.check.skip-pmd>
-        <air.check.skip-jacoco>true</air.check.skip-jacoco>
-
         <project.build.targetJdk>11</project.build.targetJdk>
-        <air.modernizer.java-version>8</air.modernizer.java-version>
-
-        <dep.antlr.version>4.7.1</dep.antlr.version>
-        <dep.airlift.version>0.197</dep.airlift.version>
-        <dep.packaging.version>${dep.airlift.version}</dep.packaging.version>
-        <dep.aws-sdk.version>1.11.749</dep.aws-sdk.version>
-        <dep.okhttp.version>3.9.0</dep.okhttp.version>
-        <dep.jdbi3.version>3.4.0</dep.jdbi3.version>
+        <dep.errorprone.version>2.7.1</dep.errorprone.version>
+        <air.main.basedir>${project.basedir}</air.main.basedir>
         <dep.drift.version>1.14</dep.drift.version>
-        <dep.tempto.version>175</dep.tempto.version>
-        <dep.gcs.version>2.0.0</dep.gcs.version>
-        <dep.errorprone.version>2.3.4</dep.errorprone.version>
-        <rubix.version>0.3.6</rubix.version>
-        <presto.version>350</presto.version>
-
-        <!--
-          America/Bahia_Banderas has:
-           - offset change since 1970 (offset Jan 1970: -08:00, offset Jan 2018: -06:00)
-           - DST (e.g. at 2017-04-02 02:00:00 clocks turned forward 1 hour; 2017-10-29 02:00:00 clocks turned backward 1 hour)
-           - has forward offset change on first day of epoch (1970-01-01 00:00:00 clocks turned forward 1 hour)
-           - had forward change at midnight (1970-01-01 00:00:00 clocks turned forward 1 hour)
-          -->
-        <air.test.timezone>America/Bahia_Banderas</air.test.timezone>
-        <air.test.parallel>methods</air.test.parallel>
-        <air.test.thread-count>2</air.test.thread-count>
-        <!-- Be conservative about memory allotment, because tests start background process (e.g. docker containers) -->
-        <air.test.jvmsize>3g</air.test.jvmsize>
-
-        <air.javadoc.lint>-missing</air.javadoc.lint>
+        <maven.compiler.source>11</maven.compiler.source>
+        <maven.compiler.target>11</maven.compiler.target>
     </properties>
 
     <modules>
@@ -81,66 +51,9 @@
         <dependencies>
 
             <dependency>
-                <groupId>io.prestosql</groupId>
+                <groupId>io.trino</groupId>
                 <artifactId>presto-gateway-main</artifactId>
                 <version>${project.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>io.prestosql</groupId>
-                <artifactId>presto-client</artifactId>
-                <version>${presto.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>io.prestosql</groupId>
-                <artifactId>presto-main</artifactId>
-                <version>${presto.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>io.prestosql</groupId>
-                <artifactId>presto-parser</artifactId>
-                <version>${presto.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>io.prestosql</groupId>
-                <artifactId>presto-spi</artifactId>
-                <version>${presto.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>io.prestosql</groupId>
-                <artifactId>presto-resource-group-managers</artifactId>
-                <version>${presto.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>io.prestosql</groupId>
-                <artifactId>presto-plugin-toolkit</artifactId>
-                <version>${presto.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>io.prestosql</groupId>
-                <artifactId>presto-tpch</artifactId>
-                <version>${presto.version}</version>
-                <scope>test</scope>
-            </dependency>
-
-            <dependency>
-                <groupId>io.prestosql</groupId>
-                <artifactId>presto-blackhole</artifactId>
-                <version>${presto.version}</version>
-                <scope>test</scope>
-            </dependency>
-
-            <dependency>
-                <groupId>io.prestosql</groupId>
-                <artifactId>presto-jdbc</artifactId>
-                <version>${presto.version}</version>
-                <scope>test</scope>
             </dependency>
 
         </dependencies>
@@ -149,26 +62,26 @@
     <build>
         <pluginManagement>
             <plugins>
-                <plugin>
-                    <groupId>org.antlr</groupId>
-                    <artifactId>antlr4-maven-plugin</artifactId>
-                    <version>${dep.antlr.version}</version>
-                    <executions>
-                        <execution>
-                            <goals>
-                                <goal>antlr4</goal>
-                            </goals>
-                        </execution>
-                    </executions>
-                    <configuration>
-                        <visitor>true</visitor>
-                    </configuration>
-                </plugin>
+<!--                <plugin>-->
+<!--                    <groupId>org.antlr</groupId>-->
+<!--                    <artifactId>antlr4-maven-plugin</artifactId>-->
+<!--                    <version>${dep.antlr.version}</version>-->
+<!--                    <executions>-->
+<!--                        <execution>-->
+<!--                            <goals>-->
+<!--                                <goal>antlr4</goal>-->
+<!--                            </goals>-->
+<!--                        </execution>-->
+<!--                    </executions>-->
+<!--                    <configuration>-->
+<!--                        <visitor>true</visitor>-->
+<!--                    </configuration>-->
+<!--                </plugin>-->
 
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-shade-plugin</artifactId>
-                    <version>3.1.1</version>
+                    <version>3.2.4</version>
                 </plugin>
 
                 <plugin>
@@ -216,24 +129,6 @@
 
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-enforcer-plugin</artifactId>
-                    <configuration>
-                        <rules>
-                            <requireUpperBoundDeps>
-                                <excludes combine.children="append">
-                                    <!-- TODO: fix this in Airlift resolver -->
-                                    <exclude>org.codehaus.plexus:plexus-utils</exclude>
-                                    <exclude>com.google.guava:guava</exclude>
-                                    <exclude>com.fasterxml.jackson.core:jackson-core</exclude>
-                                    <exclude>com.google.j2objc:j2objc-annotations</exclude>
-                                </excludes>
-                            </requireUpperBoundDeps>
-                        </rules>
-                    </configuration>
-                </plugin>
-
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-release-plugin</artifactId>
                     <configuration>
                         <preparationGoals>clean verify -DskipTests</preparationGoals>
@@ -243,16 +138,16 @@
                 <plugin>
                     <groupId>ca.vanzyl.provisio.maven.plugins</groupId>
                     <artifactId>provisio-maven-plugin</artifactId>
-                    <version>1.0.9</version>
+                    <version>1.0.18</version>
                 </plugin>
             </plugins>
         </pluginManagement>
 
         <plugins>
             <plugin>
-                <groupId>io.prestosql</groupId>
-                <artifactId>presto-maven-plugin</artifactId>
-                <version>9</version>
+                <groupId>io.trino</groupId>
+                <artifactId>trino-maven-plugin</artifactId>
+                <version>11</version>
                 <extensions>true</extensions>
             </plugin>
 
@@ -306,14 +201,14 @@
 
                 java \
                   -cp ./presto-geospatial/target/presto-geospatial-*-tests-with-dependencies.jar \
-                  io.prestosql.plugin.geospatial.BenchmarkSTIntersects
+                  io.trino.plugin.geospatial.BenchmarkSTIntersects
             -->
             <build>
                 <plugins>
                     <plugin>
                         <artifactId>maven-assembly-plugin</artifactId>
                         <configuration>
-                            <descriptor>${air.main.basedir}/src/assembly/tests-with-dependencies.xml</descriptor>
+<!--                            <descriptor>${air.main.basedir}/src/assembly/tests-with-dependencies.xml</descriptor>-->
                         </configuration>
                         <executions>
                             <execution>
@@ -330,14 +225,14 @@
         </profile>
 
         <profile>
-            <id>errorprone-compiler-presto</id><!-- airbase defines "errorprone-compiler" profile but set up this ourselves -->
+            <id>errorprone-compiler</id><!-- airbase defines "errorprone-compiler" profile but set up this ourselves -->
 
             <build>
                 <plugins>
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-compiler-plugin</artifactId>
-                        <version>3.8.0</version>
+                        <version>3.8.1</version>
                         <!--suppress MavenModelInspection -->
                         <configuration combine.children="merge">
                             <fork>true</fork>

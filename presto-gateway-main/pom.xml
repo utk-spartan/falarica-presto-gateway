@@ -4,9 +4,9 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>io.prestosql</groupId>
-        <artifactId>presto-root</artifactId>
-        <version>334</version>
+        <groupId>io.trino</groupId>
+        <artifactId>trino-root</artifactId>
+        <version>357</version>
     </parent>
 
 
@@ -14,14 +14,41 @@
     <description>Presto - Gateway Service</description>
 
     <properties>
-        <main-class>io.prestosql.gateway.PrestoGateway</main-class>
-        <ehcache.version>3.8.1</ehcache.version>
-        <activejdbc.version>2.4-j8</activejdbc.version>
+        <main-class>io.trino.gateway.PrestoGateway</main-class>
+        <activejdbc.version>3.0-j11</activejdbc.version>
         <postgresql.version>42.2.5</postgresql.version>
         <checkstyle.skip>true</checkstyle.skip>
-        <dropwizard.version>1.3.8</dropwizard.version>
         <environments>development</environments>
-        <jackson.version>2.11.3</jackson.version>
+        <jackson.version>2.11.4</jackson.version>
+        <trino.version>357</trino.version>
+
+        <air.main.basedir>${project.basedir}</air.main.basedir>
+        <air.java.version>11.0.7</air.java.version>
+
+        <air.check.skip-spotbugs>true</air.check.skip-spotbugs>
+        <air.check.skip-pmd>true</air.check.skip-pmd>
+        <air.check.skip-jacoco>true</air.check.skip-jacoco>
+
+        <project.build.targetJdk>11</project.build.targetJdk>
+        <air.modernizer.java-version>8</air.modernizer.java-version>
+
+        <dep.airlift.version>206</dep.airlift.version>
+        <dep.packaging.version>${dep.airlift.version}</dep.packaging.version>
+        <dep.jdbi3.version>3.17.0</dep.jdbi3.version>
+
+        <!--
+          America/Bahia_Banderas has:
+           - offset change since 1970 (offset Jan 1970: -08:00, offset Jan 2018: -06:00)
+           - DST (e.g. at 2017-04-02 02:00:00 clocks turned forward 1 hour; 2017-10-29 02:00:00 clocks turned backward 1 hour)
+           - has forward offset change on first day of epoch (1970-01-01 00:00:00 clocks turned forward 1 hour)
+           - had forward change at midnight (1970-01-01 00:00:00 clocks turned forward 1 hour)
+          -->
+        <air.test.timezone>America/Bahia_Banderas</air.test.timezone>
+        <air.test.parallel>methods</air.test.parallel>
+        <air.test.thread-count>2</air.test.thread-count>
+        <!-- Be conservative about memory allotment, because tests start background process (e.g. docker containers) -->
+        <air.test.jvmsize>3g</air.test.jvmsize>
+        <air.javadoc.lint>-missing</air.javadoc.lint>
     </properties>
     <dependencies>
 
@@ -38,6 +65,225 @@
                 </dependency>
         -->
 
+<!--        <dependency>-->
+<!--            <groupId>io.airlift</groupId>-->
+<!--            <artifactId>concurrent</artifactId>-->
+<!--            <version>${dep.airlift.version}</version>-->
+<!--        </dependency>-->
+
+<!--        <dependency>-->
+<!--            <groupId>io.airlift</groupId>-->
+<!--            <artifactId>node</artifactId>-->
+<!--            <version>${dep.airlift.version}</version>-->
+<!--        </dependency>-->
+
+<!--        <dependency>-->
+<!--            <groupId>io.airlift</groupId>-->
+<!--            <artifactId>stats</artifactId>-->
+<!--            <version>${dep.airlift.version}</version>-->
+<!--        </dependency>-->
+
+<!--        <dependency>-->
+<!--            <groupId>io.airlift</groupId>-->
+<!--            <artifactId>bootstrap</artifactId>-->
+<!--            <version>${dep.airlift.version}</version>-->
+<!--        </dependency>-->
+
+<!--        <dependency>-->
+<!--            <groupId>io.airlift</groupId>-->
+<!--            <artifactId>jaxrs</artifactId>-->
+<!--            <version>${dep.airlift.version}</version>-->
+<!--        </dependency>-->
+
+<!--        <dependency>-->
+<!--            <groupId>io.airlift</groupId>-->
+<!--            <artifactId>log-manager</artifactId>-->
+<!--            <version>${dep.airlift.version}</version>-->
+<!--        </dependency>-->
+
+<!--        <dependency>-->
+<!--            <groupId>org.sonatype.aether</groupId>-->
+<!--            <artifactId>aether-api</artifactId>-->
+<!--            <version>1.13.1</version>-->
+<!--        </dependency>-->
+
+<!--        <dependency>-->
+<!--            <groupId>joda-time</groupId>-->
+<!--            <artifactId>joda-time</artifactId>-->
+<!--        </dependency>-->
+
+<!--        <dependency>-->
+<!--            <groupId>io.airlift.resolver</groupId>-->
+<!--            <artifactId>resolver</artifactId>-->
+<!--            <version>1.6</version>-->
+<!--        </dependency>-->
+
+<!--        <dependency>-->
+<!--            <groupId>io.airlift</groupId>-->
+<!--            <artifactId>event</artifactId>-->
+<!--            <version>${dep.airlift.version}</version>-->
+<!--        </dependency>-->
+
+<!--        <dependency>-->
+<!--            <groupId>io.airlift</groupId>-->
+<!--            <artifactId>trace-token</artifactId>-->
+<!--            <version>${dep.airlift.version}</version>-->
+<!--        </dependency>-->
+
+<!--        <dependency>-->
+<!--            <groupId>com.google.guava</groupId>-->
+<!--            <artifactId>guava</artifactId>-->
+<!--        </dependency>-->
+
+<!--        <dependency>-->
+<!--            <groupId>com.google.inject</groupId>-->
+<!--            <artifactId>guice</artifactId>-->
+<!--        </dependency>-->
+
+<!--        <dependency>-->
+<!--            <groupId>org.weakref</groupId>-->
+<!--            <artifactId>jmxutils</artifactId>-->
+<!--        </dependency>-->
+
+<!--        <dependency>-->
+<!--            <groupId>javax.validation</groupId>-->
+<!--            <artifactId>validation-api</artifactId>-->
+<!--        </dependency>-->
+
+<!--        <dependency>-->
+<!--            <groupId>javax.ws.rs</groupId>-->
+<!--            <artifactId>javax.ws.rs-api</artifactId>-->
+<!--        </dependency>-->
+
+<!--        <dependency>-->
+<!--            <groupId>javax.annotation</groupId>-->
+<!--            <artifactId>javax.annotation-api</artifactId>-->
+<!--        </dependency>-->
+
+<!--        <dependency>-->
+<!--            <groupId>javax.inject</groupId>-->
+<!--            <artifactId>javax.inject</artifactId>-->
+<!--        </dependency>-->
+
+<!--        <dependency>-->
+<!--            <groupId>com.fasterxml.jackson.core</groupId>-->
+<!--            <artifactId>jackson-core</artifactId>-->
+<!--            <version>${jackson.version}</version>-->
+<!--        </dependency>-->
+
+<!--        <dependency>-->
+<!--            <groupId>javax.servlet</groupId>-->
+<!--            <artifactId>javax.servlet-api</artifactId>-->
+<!--        </dependency>-->
+
+<!--        <dependency>-->
+<!--            <groupId>io.jsonwebtoken</groupId>-->
+<!--            <artifactId>jjwt</artifactId>-->
+<!--            <version>0.9.0</version>-->
+<!--        </dependency>-->
+
+        <dependency>
+            <groupId>io.trino</groupId>
+            <artifactId>trino-client</artifactId>
+            <version>${trino.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>io.trino</groupId>
+            <artifactId>trino-main</artifactId>
+            <version>${trino.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>io.trino</groupId>
+            <artifactId>trino-parser</artifactId>
+            <version>${trino.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>io.trino</groupId>
+            <artifactId>trino-plugin-toolkit</artifactId>
+            <version>${trino.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>io.trino</groupId>
+            <artifactId>trino-resource-group-managers</artifactId>
+            <version>${trino.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>io.trino</groupId>
+            <artifactId>trino-spi</artifactId>
+            <version>${trino.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>io.airlift</groupId>
+            <artifactId>configuration</artifactId>
+            <version>${dep.airlift.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>io.airlift</groupId>
+            <artifactId>http-client</artifactId>
+            <version>${dep.airlift.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>io.airlift</groupId>
+            <artifactId>http-server</artifactId>
+            <version>${dep.airlift.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>io.airlift</groupId>
+            <artifactId>jmx</artifactId>
+            <version>${dep.airlift.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>io.airlift</groupId>
+            <artifactId>json</artifactId>
+            <version>${dep.airlift.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>io.airlift</groupId>
+            <artifactId>log</artifactId>
+            <version>${dep.airlift.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>io.airlift</groupId>
+            <artifactId>security</artifactId>
+            <version>${dep.airlift.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>io.airlift</groupId>
+            <artifactId>slice</artifactId>
+            <version>0.39</version>
+        </dependency>
+
+        <dependency>
+            <groupId>io.airlift</groupId>
+            <artifactId>units</artifactId>
+            <version>1.6</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-annotations</artifactId>
+            <version>${jackson.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+            <version>${jackson.version}</version>
+        </dependency>
+
         <dependency>
             <groupId>com.fasterxml.jackson.datatype</groupId>
             <artifactId>jackson-datatype-jdk8</artifactId>
@@ -45,184 +291,15 @@
         </dependency>
 
         <dependency>
-            <groupId>io.airlift</groupId>
-            <artifactId>concurrent</artifactId>
+            <groupId>com.google.code.findbugs</groupId>
+            <artifactId>jsr305</artifactId>
+            <optional>true</optional>
         </dependency>
 
         <dependency>
-            <groupId>io.airlift</groupId>
-            <artifactId>node</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>io.airlift</groupId>
-            <artifactId>slice</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>io.airlift</groupId>
-            <artifactId>jmx</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>io.airlift</groupId>
-            <artifactId>json</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>io.airlift</groupId>
-            <artifactId>stats</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>io.airlift</groupId>
-            <artifactId>bootstrap</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>io.airlift</groupId>
-            <artifactId>units</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>io.airlift</groupId>
-            <artifactId>configuration</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>io.airlift</groupId>
-            <artifactId>http-client</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>io.airlift</groupId>
-            <artifactId>http-server</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>io.airlift</groupId>
-            <artifactId>jaxrs</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>io.airlift</groupId>
-            <artifactId>log</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>io.airlift</groupId>
-            <artifactId>log-manager</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>org.sonatype.aether</groupId>
-            <artifactId>aether-api</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>joda-time</groupId>
-            <artifactId>joda-time</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>io.airlift.resolver</groupId>
-            <artifactId>resolver</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>io.airlift</groupId>
-            <artifactId>event</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>io.airlift</groupId>
-            <artifactId>security</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>io.airlift</groupId>
-            <artifactId>trace-token</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>com.google.guava</groupId>
-            <artifactId>guava</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>com.google.inject</groupId>
-            <artifactId>guice</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>org.weakref</groupId>
-            <artifactId>jmxutils</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>javax.validation</groupId>
-            <artifactId>validation-api</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>javax.ws.rs</groupId>
-            <artifactId>javax.ws.rs-api</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>javax.annotation</groupId>
-            <artifactId>javax.annotation-api</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>javax.inject</groupId>
-            <artifactId>javax.inject</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>com.fasterxml.jackson.core</groupId>
-            <artifactId>jackson-core</artifactId>
-            <version>${jackson.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>javax.servlet</groupId>
-            <artifactId>javax.servlet-api</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>io.jsonwebtoken</groupId>
-            <artifactId>jjwt</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>io.prestosql</groupId>
-            <artifactId>presto-client</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>io.prestosql</groupId>
-            <artifactId>presto-main</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>io.prestosql</groupId>
-            <artifactId>presto-parser</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>io.prestosql</groupId>
-            <artifactId>presto-spi</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>io.prestosql</groupId>
-            <artifactId>presto-resource-group-managers</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>io.prestosql</groupId>
-            <artifactId>presto-plugin-toolkit</artifactId>
+            <groupId>com.zaxxer</groupId>
+            <artifactId>HikariCP</artifactId>
+            <version>3.4.5</version>
         </dependency>
 
         <dependency>
@@ -237,41 +314,6 @@
             </exclusions>
         </dependency>
 
-	<!-- for testing -->
-        <dependency>
-            <groupId>org.testng</groupId>
-            <artifactId>testng</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.assertj</groupId>
-            <artifactId>assertj-core</artifactId>
-            <scope>test</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>io.prestosql</groupId>
-            <artifactId>presto-tpch</artifactId>
-            <scope>test</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>io.prestosql</groupId>
-            <artifactId>presto-blackhole</artifactId>
-            <scope>test</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>io.prestosql</groupId>
-            <artifactId>presto-jdbc</artifactId>
-            <scope>test</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>org.postgresql</groupId>
-            <artifactId>postgresql</artifactId>
-            <version>42.2.5</version>
-        </dependency>
         <dependency>
             <groupId>org.javalite</groupId>
             <artifactId>javalite-common</artifactId>
@@ -283,27 +325,48 @@
                 </exclusion>
             </exclusions>
         </dependency>
+
         <dependency>
-            <groupId>com.zaxxer</groupId>
-            <artifactId>HikariCP</artifactId>
-            <version>3.4.5</version>
+            <groupId>org.postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+            <version>42.2.5</version>
+        </dependency>
+
+	<!-- for testing -->
+
+        <dependency>
+            <groupId>io.trino</groupId>
+            <artifactId>trino-blackhole</artifactId>
+            <version>${trino.version}</version>
+            <scope>test</scope>
         </dependency>
 
         <dependency>
-            <groupId>com.fasterxml.jackson.core</groupId>
-            <artifactId>jackson-annotations</artifactId>
-            <version>${jackson.version}</version>
+            <groupId>io.trino</groupId>
+            <artifactId>trino-jdbc</artifactId>
+            <version>${trino.version}</version>
+            <scope>test</scope>
         </dependency>
+
         <dependency>
-            <groupId>com.fasterxml.jackson.core</groupId>
-            <artifactId>jackson-databind</artifactId>
-            <version>${jackson.version}</version>
+            <groupId>io.trino</groupId>
+            <artifactId>trino-tpch</artifactId>
+            <version>${trino.version}</version>
+            <scope>test</scope>
         </dependency>
+
         <dependency>
-            <groupId>com.google.code.findbugs</groupId>
-            <artifactId>jsr305</artifactId>
-            <optional>true</optional>
+            <groupId>org.assertj</groupId>
+            <artifactId>assertj-core</artifactId>
+            <scope>test</scope>
         </dependency>
+
+        <dependency>
+            <groupId>org.testng</groupId>
+            <artifactId>testng</artifactId>
+            <scope>test</scope>
+        </dependency>
+
     </dependencies>
     <build>
         <pluginManagement>
@@ -320,7 +383,25 @@
                         </excludes>
                     </configuration>
                 </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-enforcer-plugin</artifactId>
+                    <configuration>
+                        <rules>
+                            <requireUpperBoundDeps>
+                                <excludes combine.children="append">
+                                    <!-- TODO: fix this in Airlift resolver -->
+                                    <exclude>org.codehaus.plexus:plexus-utils</exclude>
+                                    <exclude>com.google.guava:guava</exclude>
+                                    <exclude>com.fasterxml.jackson.core:jackson-core</exclude>
+                                    <exclude>com.google.j2objc:j2objc-annotations</exclude>
+                                </excludes>
+                            </requireUpperBoundDeps>
+                        </rules>
+                    </configuration>
+                </plugin>
             </plugins>
+
         </pluginManagement>
         <plugins>
             <plugin>
@@ -336,15 +417,6 @@
                     </execution>
                 </executions>
             </plugin>
-
-            <!--    <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-source-plugin</artifactId>
-                    <version>3.0.0</version>
-                    <configuration>
-                        <skipSource>true</skipSource>
-                    </configuration>
-                </plugin> -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-checkstyle-plugin</artifactId>

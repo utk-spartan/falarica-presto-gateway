@@ -71,7 +71,7 @@ After opening the project in IntelliJ, double check that the Java SDK is properl
 
 Presto comes with sample configuration that should work out-of-the-box for development. Use the following options to create a run configuration:
 
-* Main Class: `io.prestosql.gateway.PrestoGateway`
+* Main Class: `io.trino.gateway.PrestoGateway`
 * VM Options: `-ea -XX:+UseG1GC -XX:G1HeapRegionSize=32M -XX:+UseGCOverheadLimit -XX:+ExplicitGCInvokesConcurrent -Xmx2G -Dconfig=etc/config.properties -Dlog.levels-file=etc/log.properties -Djdk.attach.allowAttachSelf=true`
 * Working directory: `$MODULE_DIR$`
 * Use classpath of module: `presto-gateway-main`
@@ -151,7 +151,7 @@ We recommend you use IntelliJ as your IDE.
 
 * Alphabetize sections in the documentation source files (both in the table of contents files and other regular documentation files). In general, alphabetize methods/variables/sections if such ordering already exists in the surrounding code.
 * When appropriate, use the stream API. However, note that the stream implementation does not perform well so avoid using it in inner loops or otherwise performance sensitive sections.
-* Categorize errors when throwing exceptions. For example, PrestoException takes an error code as an argument, `PrestoException(HIVE_TOO_MANY_OPEN_PARTITIONS)`. This categorization lets you generate reports so you can monitor the frequency of various failures.
+* Categorize errors when throwing exceptions. For example, TrinoException takes an error code as an argument, `TrinoException(HIVE_TOO_MANY_OPEN_PARTITIONS)`. This categorization lets you generate reports so you can monitor the frequency of various failures.
 * Ensure that all files have the appropriate license header; you can generate the license by running `mvn license:format`.
 * Consider using String formatting (printf style formatting using the Java `Formatter` class): `format("Session property %s is invalid: %s", name, value)` (note that `format()` should always be statically imported). Sometimes, if you only need to append something, consider using the `+` operator.
 * Avoid using the ternary operator except for trivial expressions.

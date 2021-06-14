@@ -50,7 +50,7 @@ The above starts gateway with default configuration. If the configuration has to
 
 Wait for the following message log line:
 ```
-INFO	main	io.prestosql.server.PrestoServer	======== SERVER STARTED ========
+INFO	main	io.trino.server.PrestoServer	======== SERVER STARTED ========
 ```
 
 The Presto Gateway is now running on `localhost:8080` (the default port).
