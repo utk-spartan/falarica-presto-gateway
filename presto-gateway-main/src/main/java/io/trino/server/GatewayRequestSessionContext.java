@@ -8,6 +8,7 @@ import io.airlift.log.Logger;
 import io.airlift.units.DataSize;
 import io.airlift.units.Duration;
 import io.trino.Session;
+import io.trino.client.ProtocolHeaders;
 import io.trino.security.AccessControl;
 import io.trino.spi.connector.CatalogSchemaTableName;
 import io.trino.spi.security.AccessDeniedException;
@@ -49,23 +50,7 @@ import static com.google.common.base.Strings.nullToEmpty;
 import static com.google.common.collect.ImmutableList.toImmutableList;
 import static com.google.common.collect.ImmutableMap.toImmutableMap;
 import static com.google.common.net.HttpHeaders.USER_AGENT;
-import static io.trino.client.PrestoHeaders.PRESTO_CATALOG;
-import static io.trino.client.PrestoHeaders.PRESTO_CLIENT_CAPABILITIES;
-import static io.trino.client.PrestoHeaders.PRESTO_CLIENT_INFO;
-import static io.trino.client.PrestoHeaders.PRESTO_CLIENT_TAGS;
-import static io.trino.client.PrestoHeaders.PRESTO_EXTRA_CREDENTIAL;
-import static io.trino.client.PrestoHeaders.PRESTO_LANGUAGE;
-import static io.trino.client.PrestoHeaders.PRESTO_PATH;
-import static io.trino.client.PrestoHeaders.PRESTO_PREPARED_STATEMENT;
-import static io.trino.client.PrestoHeaders.PRESTO_RESOURCE_ESTIMATE;
-import static io.trino.client.PrestoHeaders.PRESTO_ROLE;
-import static io.trino.client.PrestoHeaders.PRESTO_SCHEMA;
-import static io.trino.client.PrestoHeaders.PRESTO_SESSION;
-import static io.trino.client.PrestoHeaders.PRESTO_SOURCE;
-import static io.trino.client.PrestoHeaders.PRESTO_TIME_ZONE;
-import static io.trino.client.PrestoHeaders.PRESTO_TRACE_TOKEN;
-import static io.trino.client.PrestoHeaders.PRESTO_TRANSACTION_ID;
-import static io.trino.client.PrestoHeaders.PRESTO_USER;
+import static io.trino.client.ProtocolHeaders.TRINO_HEADERS;
 import static io.trino.spi.StandardErrorCode.MISSING_CATALOG_NAME;
 import static io.trino.spi.StandardErrorCode.MISSING_SCHEMA_NAME;
 import static io.trino.sql.analyzer.SemanticExceptions.semanticException;
@@ -76,6 +61,23 @@ import static java.util.Objects.requireNonNull;
 public class GatewayRequestSessionContext
         implements SessionContext
 {
+    private static final String TRINO_CATALOG = TRINO_HEADERS.requestCatalog();
+    private static final String TRINO_CLIENT_CAPABILITIES = TRINO_HEADERS.requestClientCapabilities();
+    private static final String TRINO_CLIENT_INFO = TRINO_HEADERS.requestClientInfo();
+    private static final String TRINO_CLIENT_TAGS = TRINO_HEADERS.requestClientTags();
+    private static final String TRINO_EXTRA_CREDENTIAL = TRINO_HEADERS.requestExtraCredential();
+    private static final String TRINO_LANGUAGE = TRINO_HEADERS.requestLanguage();
+    private static final String TRINO_PATH = TRINO_HEADERS.requestPath();
+    private static final String TRINO_PREPARED_STATEMENT = TRINO_HEADERS.requestPreparedStatement();
+    private static final String TRINO_RESOURCE_ESTIMATE = TRINO_HEADERS.requestResourceEstimate();
+    private static final String TRINO_ROLE = TRINO_HEADERS.requestRole();
+    private static final String TRINO_SCHEMA = TRINO_HEADERS.requestSchema();
+    private static final String TRINO_SESSION = TRINO_HEADERS.requestSession();
+    private static final String TRINO_SOURCE = TRINO_HEADERS.requestSource();
+    private static final String TRINO_TIME_ZONE = TRINO_HEADERS.requestTimeZone();
+    private static final String TRINO_TRACE_TOKEN = TRINO_HEADERS.requestTraceToken();
+    private static final String TRINO_TRANSACTION_ID = TRINO_HEADERS.requestTransactionId();
+    private static final String TRINO_USER = TRINO_HEADERS.requestUser();
     private String sql;
     SqlParser parser = new SqlParser();
     ParsingOptions options = new ParsingOptions(ParsingOptions.DecimalLiteralTreatment.AS_DOUBLE);
@@ -116,22 +118,22 @@ public class GatewayRequestSessionContext
             GroupProvider groupProvider, String sql)
             throws WebApplicationException
     {
-        catalog = trimEmptyToNull(headers.getFirst(PRESTO_CATALOG));
+        catalog = trimEmptyToNull(headers.getFirst(TRINO_CATALOG));
 
-        schema = trimEmptyToNull(headers.getFirst(PRESTO_SCHEMA));
-        path = trimEmptyToNull(headers.getFirst(PRESTO_PATH));
+        schema = trimEmptyToNull(headers.getFirst(TRINO_SCHEMA));
+        path = trimEmptyToNull(headers.getFirst(TRINO_PATH));
         assertRequest((catalog != null) || (schema == null), "Schema is set but catalog is not");
 
         this.authenticatedIdentity = requireNonNull(authenticatedIdentity, "authenticatedIdentity is null");
         identity = buildSessionIdentity(authenticatedIdentity, headers, groupProvider);
 
-        source = headers.getFirst(PRESTO_SOURCE);
-        traceToken = Optional.ofNullable(trimEmptyToNull(headers.getFirst(PRESTO_TRACE_TOKEN)));
+        source = headers.getFirst(TRINO_SOURCE);
+        traceToken = Optional.ofNullable(trimEmptyToNull(headers.getFirst(TRINO_TRACE_TOKEN)));
         userAgent = headers.getFirst(USER_AGENT);
         remoteUserAddress = remoteAddress;
-        timeZoneId = headers.getFirst(PRESTO_TIME_ZONE);
-        language = headers.getFirst(PRESTO_LANGUAGE);
-        clientInfo = headers.getFirst(PRESTO_CLIENT_INFO);
+        timeZoneId = headers.getFirst(TRINO_TIME_ZONE);
+        language = headers.getFirst(TRINO_LANGUAGE);
+        clientInfo = headers.getFirst(TRINO_CLIENT_INFO);
         clientTags = parseClientTags(headers);
         clientCapabilities = parseClientCapabilities(headers);
         resourceEstimates = parseResourceEstimate(headers);
@@ -146,7 +148,7 @@ public class GatewayRequestSessionContext
             if (nameParts.size() == 1) {
                 String propertyName = nameParts.get(0);
 
-                assertRequest(!propertyName.isEmpty(), "Invalid %s header", PRESTO_SESSION);
+                assertRequest(!propertyName.isEmpty(), "Invalid %s header", TRINO_SESSION);
 
                 // catalog session properties cannot be validated until the transaction has stated, so we delay system property validation also
                 systemProperties.put(propertyName, propertyValue);
@@ -155,14 +157,14 @@ public class GatewayRequestSessionContext
                 String catalogName = nameParts.get(0);
                 String propertyName = nameParts.get(1);
 
-                assertRequest(!catalogName.isEmpty(), "Invalid %s header", PRESTO_SESSION);
-                assertRequest(!propertyName.isEmpty(), "Invalid %s header", PRESTO_SESSION);
+                assertRequest(!catalogName.isEmpty(), "Invalid %s header", TRINO_SESSION);
+                assertRequest(!propertyName.isEmpty(), "Invalid %s header", TRINO_SESSION);
 
                 // catalog session properties cannot be validated until the transaction has stated
                 catalogSessionProperties.computeIfAbsent(catalogName, id -> new HashMap<>()).put(propertyName, propertyValue);
             }
             else {
-                throw badRequest(format("Invalid %s header", PRESTO_SESSION));
+                throw badRequest(format("Invalid %s header", TRINO_SESSION));
             }
         }
         this.systemProperties = systemProperties.build();
@@ -171,7 +173,7 @@ public class GatewayRequestSessionContext
 
         preparedStatements = parsePreparedStatementsHeaders(headers);
 
-        String transactionIdHeader = headers.getFirst(PRESTO_TRANSACTION_ID);
+        String transactionIdHeader = headers.getFirst(TRINO_TRANSACTION_ID);
         clientTransactionSupport = transactionIdHeader != null;
         transactionId = parseTransactionId(transactionIdHeader);
     }
@@ -285,7 +287,7 @@ public class GatewayRequestSessionContext
 
     private static Identity buildSessionIdentity(Optional<Identity> authenticatedIdentity, MultivaluedMap<String, String> headers, GroupProvider groupProvider)
     {
-        String prestoUser = trimEmptyToNull(headers.getFirst(PRESTO_USER));
+        String prestoUser = trimEmptyToNull(headers.getFirst(TRINO_USER));
         String user = prestoUser != null ? prestoUser : authenticatedIdentity.map(Identity::getUser).orElse(null);
         assertRequest(user != null, "User must be set");
         return authenticatedIdentity
@@ -295,6 +297,12 @@ public class GatewayRequestSessionContext
                 .withAdditionalExtraCredentials(parseExtraCredentials(headers))
                 .withAdditionalGroups(groupProvider.getGroups(user))
                 .build();
+    }
+
+    @Override
+    public ProtocolHeaders getProtocolHeaders()
+    {
+        return TRINO_HEADERS;
     }
 
     @Override
@@ -429,19 +437,19 @@ public class GatewayRequestSessionContext
 
     private static Map<String, String> parseSessionHeaders(MultivaluedMap<String, String> headers)
     {
-        return parseProperty(headers, PRESTO_SESSION);
+        return parseProperty(headers, TRINO_SESSION);
     }
 
     private static Map<String, SelectedRole> parseRoleHeaders(MultivaluedMap<String, String> headers)
     {
         ImmutableMap.Builder<String, SelectedRole> roles = ImmutableMap.builder();
-        parseProperty(headers, PRESTO_ROLE).forEach((key, value) -> {
+        parseProperty(headers, TRINO_ROLE).forEach((key, value) -> {
             SelectedRole role;
             try {
                 role = SelectedRole.valueOf(value);
             }
             catch (IllegalArgumentException e) {
-                throw badRequest(format("Invalid %s header", PRESTO_ROLE));
+                throw badRequest(format("Invalid %s header", TRINO_ROLE));
             }
             roles.put(key, role);
         });
@@ -450,7 +458,7 @@ public class GatewayRequestSessionContext
 
     private static Map<String, String> parseExtraCredentials(MultivaluedMap<String, String> headers)
     {
-        return parseProperty(headers, PRESTO_EXTRA_CREDENTIAL);
+        return parseProperty(headers, TRINO_EXTRA_CREDENTIAL);
     }
 
     private static Map<String, String> parseProperty(MultivaluedMap<String, String> headers, String headerName)
@@ -472,19 +480,19 @@ public class GatewayRequestSessionContext
     private static Set<String> parseClientTags(MultivaluedMap<String, String> headers)
     {
         Splitter splitter = Splitter.on(',').trimResults().omitEmptyStrings();
-        return ImmutableSet.copyOf(splitter.split(nullToEmpty(headers.getFirst(PRESTO_CLIENT_TAGS))));
+        return ImmutableSet.copyOf(splitter.split(nullToEmpty(headers.getFirst(TRINO_CLIENT_TAGS))));
     }
 
     private static Set<String> parseClientCapabilities(MultivaluedMap<String, String> headers)
     {
         Splitter splitter = Splitter.on(',').trimResults().omitEmptyStrings();
-        return ImmutableSet.copyOf(splitter.split(nullToEmpty(headers.getFirst(PRESTO_CLIENT_CAPABILITIES))));
+        return ImmutableSet.copyOf(splitter.split(nullToEmpty(headers.getFirst(TRINO_CLIENT_CAPABILITIES))));
     }
 
     private static ResourceEstimates parseResourceEstimate(MultivaluedMap<String, String> headers)
     {
         Session.ResourceEstimateBuilder builder = new Session.ResourceEstimateBuilder();
-        parseProperty(headers, PRESTO_RESOURCE_ESTIMATE).forEach((name, value) -> {
+        parseProperty(headers, TRINO_RESOURCE_ESTIMATE).forEach((name, value) -> {
             try {
                 switch (name.toUpperCase()) {
                     case ResourceEstimates.EXECUTION_TIME:
@@ -518,13 +526,13 @@ public class GatewayRequestSessionContext
     private static Map<String, String> parsePreparedStatementsHeaders(MultivaluedMap<String, String> headers)
     {
         ImmutableMap.Builder<String, String> preparedStatements = ImmutableMap.builder();
-        parseProperty(headers, PRESTO_PREPARED_STATEMENT).forEach((key, sqlString) -> {
+        parseProperty(headers, TRINO_PREPARED_STATEMENT).forEach((key, sqlString) -> {
             String statementName;
             try {
                 statementName = urlDecode(key);
             }
             catch (IllegalArgumentException e) {
-                throw badRequest(format("Invalid %s header: %s", PRESTO_PREPARED_STATEMENT, e.getMessage()));
+                throw badRequest(format("Invalid %s header: %s", TRINO_PREPARED_STATEMENT, e.getMessage()));
             }
 
             // Validate statement
@@ -533,7 +541,7 @@ public class GatewayRequestSessionContext
                 sqlParser.createStatement(sqlString, new ParsingOptions(AS_DOUBLE /* anything */));
             }
             catch (ParsingException e) {
-                throw badRequest(format("Invalid %s header: %s", PRESTO_PREPARED_STATEMENT, e.getMessage()));
+                throw badRequest(format("Invalid %s header: %s", TRINO_PREPARED_STATEMENT, e.getMessage()));
             }
 
             preparedStatements.put(statementName, sqlString);

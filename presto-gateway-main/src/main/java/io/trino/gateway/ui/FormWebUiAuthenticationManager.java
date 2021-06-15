@@ -19,13 +19,12 @@ import io.airlift.http.client.HttpUriBuilder;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
-import io.trino.server.ServletSecurityUtils;
-import io.trino.server.security.AuthenticationException;
 import io.trino.server.security.Authenticator;
 import io.trino.server.security.PasswordAuthenticatorManager;
 import io.trino.spi.security.AccessDeniedException;
 import io.trino.spi.security.BasicPrincipal;
 import io.trino.spi.security.Identity;
+import io.trino.spi.security.PasswordAuthenticator;
 
 import javax.inject.Inject;
 import javax.servlet.FilterChain;
@@ -115,7 +114,7 @@ public class FormWebUiAuthenticationManager
 
         // authenticator over a secure connection bypasses the form login
         if (authenticator.isPresent() && request.isSecure()) {
-            handleProtocolLoginRequest(authenticator.get(), request, response, nextFilter);
+//            handleProtocolLoginRequest(authenticator.get(), request, response, nextFilter);
             return;
         }
 
@@ -180,29 +179,29 @@ public class FormWebUiAuthenticationManager
         return path;
     }
 
-    private static void handleProtocolLoginRequest(Authenticator authenticator, HttpServletRequest request, HttpServletResponse response, FilterChain nextFilter)
-            throws IOException, ServletException
-    {
-        Identity authenticatedIdentity;
-        try {
-            authenticatedIdentity = authenticator.authenticate(request);
-        }
-        catch (AuthenticationException e) {
-            // authentication failed
-            ServletSecurityUtils.skipRequestBody(request);
-
-            e.getAuthenticateHeader().ifPresent(value -> response.addHeader(WWW_AUTHENTICATE, value));
-
-            ServletSecurityUtils.sendErrorMessage(response, SC_UNAUTHORIZED, firstNonNull(e.getMessage(), "Unauthorized"));
-            return;
-        }
-
-        if (redirectFormLoginToUi(request, response)) {
-            return;
-        }
-
-        ServletSecurityUtils.withAuthenticatedIdentity(nextFilter, request, response, authenticatedIdentity);
-    }
+//    private static void handleProtocolLoginRequest(Authenticator authenticator, ContainerRequestContext request, HttpServletResponse response, FilterChain nextFilter)
+//            throws IOException, ServletException
+//    {
+//        Identity authenticatedIdentity;
+//        try {
+//            authenticatedIdentity = authenticator.authenticate(request);
+//        }
+//        catch (AuthenticationException e) {
+//            // authentication failed
+//            ServletSecurityUtils.skipRequestBody(request);
+//
+//            e.getAuthenticateHeader().ifPresent(value -> response.addHeader(WWW_AUTHENTICATE, value));
+//
+//            ServletSecurityUtils.sendErrorMessage(response, SC_UNAUTHORIZED, firstNonNull(e.getMessage(), "Unauthorized"));
+//            return;
+//        }
+//
+//        if (redirectFormLoginToUi(request, response)) {
+//            return;
+//        }
+//
+//        ServletSecurityUtils.withAuthenticatedIdentity(nextFilter, request, response, authenticatedIdentity);
+//    }
 
     public static boolean redirectFormLoginToUi(HttpServletRequest request, HttpServletResponse response)
     {
@@ -253,10 +252,14 @@ public class FormWebUiAuthenticationManager
 
         String password = emptyToNull(request.getParameter("password"));
         try {
-            passwordAuthenticatorManager.getAuthenticator().createAuthenticatedPrincipal(username, password);
+            PasswordAuthenticator authenticator = passwordAuthenticatorManager.getAuthenticators().get(0);
+            authenticator.createAuthenticatedPrincipal(username, password);
             return Optional.of(username);
         }
         catch (AccessDeniedException e) {
+            return Optional.empty();
+        }
+        catch (IndexOutOfBoundsException e) {
             return Optional.empty();
         }
     }

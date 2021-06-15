@@ -32,7 +32,6 @@ import io.airlift.json.JsonCodec;
 import io.airlift.log.Logger;
 import io.airlift.units.Duration;
 import io.trino.SessionRepresentation;
-import io.trino.client.PrestoHeaders;
 import io.trino.client.QueryError;
 import io.trino.client.QueryResults;
 import io.trino.client.StatementStats;
@@ -123,6 +122,7 @@ import static io.airlift.http.client.Request.Builder.prepareGet;
 import static io.airlift.http.client.Request.Builder.preparePost;
 import static io.airlift.http.client.StaticBodyGenerator.createStaticBodyGenerator;
 import static io.airlift.jaxrs.AsyncResponseHandler.bindAsyncResponse;
+import static io.trino.client.ProtocolHeaders.TRINO_HEADERS;
 import static io.trino.execution.QueryState.FAILED;
 import static io.trino.execution.QueryState.QUEUED;
 import static io.trino.server.HttpRequestSessionContext.AUTHENTICATED_IDENTITY;
@@ -470,7 +470,8 @@ public class GatewayResource
                         preparedQuery == null ? Optional.empty() : Optional.of(preparedQuery.asText()),
                         stats,
                         errorType == null ? null : errTypecodec.fromJson(errorType.toString()),
-                        errorCode == null ? null : errCodeCodec.fromJson(errorCode.toString()));
+                        errorCode == null ? null : errCodeCodec.fromJson(errorCode.toString()),
+                        Optional.empty());
                 if (stateFilter == null || state.asText().equalsIgnoreCase(expectedState.toString())) {
                     builder.add(bqInfo);
                 }
@@ -732,10 +733,10 @@ public class GatewayResource
     {
         response.getHeaders().forEach((headerName, value) -> {
             String name = headerName.toString();
-            if (name.equalsIgnoreCase(PrestoHeaders.PRESTO_CLEAR_TRANSACTION_ID)) {
+            if (name.equalsIgnoreCase(TRINO_HEADERS.responseClearTransactionId())) {
                 log.debug("CLEAR TX ID is " + value);
             }
-            if (name.equalsIgnoreCase(PrestoHeaders.PRESTO_STARTED_TRANSACTION_ID)) {
+            if (name.equalsIgnoreCase(TRINO_HEADERS.responseStartedTransactionId())) {
                 log.debug("STARTED TX ID is " + value);
             }
             if (isPrestoHeader(name) || name.equalsIgnoreCase(SET_COOKIE)) {
@@ -792,7 +793,7 @@ public class GatewayResource
                             final String[] startedTxId = {""};
                             response.getHeaders().forEach((headerName, val) -> {
                                 String hName = headerName.toString();
-                                if (hName.equalsIgnoreCase(PrestoHeaders.PRESTO_STARTED_TRANSACTION_ID)) {
+                                if (hName.equalsIgnoreCase(TRINO_HEADERS.responseStartedTransactionId())) {
                                     startedTxId[0] = val;
                                 }
                             });
@@ -816,10 +817,10 @@ public class GatewayResource
                 final String[] txID = {""};
                 response.getHeaders().forEach((headerName, val) -> {
                     String hName = headerName.toString();
-                    if (hName.equalsIgnoreCase(PrestoHeaders.PRESTO_STARTED_TRANSACTION_ID)) {
+                    if (hName.equalsIgnoreCase(TRINO_HEADERS.responseStartedTransactionId())) {
                         txID[0] = "started:" + val;
                     }
-                    if (hName.equalsIgnoreCase(PrestoHeaders.PRESTO_CLEAR_TRANSACTION_ID)) {
+                    if (hName.equalsIgnoreCase(TRINO_HEADERS.responseClearTransactionId())) {
                         txID[0] = "clear:" + val;
                     }
                 });
