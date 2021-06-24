@@ -1,18 +1,18 @@
-@import 'scss/variables'; 
-@import '../node_modules/bootstrap/scss/bootstrap';
+@import 'scss/variables';
+@import '../../../../../node_modules/bootstrap/scss/bootstrap';
 @import '~@swimlane/ngx-datatable/assets/icons.css';
 
 /* You can add global styles to this file, and also import other style files */
 /* You can add global styles to this file, and also import other style files */
-@import 'scss/custom'; 
-@import 'scss/responsive'; 
-// regular style toast 
+@import 'scss/custom';
+@import 'scss/responsive';
+// regular style toast
 @import '~ngx-toastr/toastr';
- 
-// bootstrap style toast 
-// or import a bootstrap 4 alert styled design (SASS ONLY) 
-// should be after your bootstrap imports, it uses bs4 variables, mixins, functions 
-// if you'd like to use it without importing all of bootstrap it requires 
+
+// bootstrap style toast
+// or import a bootstrap 4 alert styled design (SASS ONLY)
+// should be after your bootstrap imports, it uses bs4 variables, mixins, functions
+// if you'd like to use it without importing all of bootstrap it requires
 .normal .toast-error {
     background-color: #bd362f;
 }
