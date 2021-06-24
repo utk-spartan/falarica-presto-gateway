@@ -1,3 +1,46 @@
+# Build
+-- setup env
+jdk11
+maven
+npm
+---updates npm
+npm -i -g npm
+
+## Compile
+---- 
+rm -rf node_modules && rm -f package-lock.json package.json && rm -rf presto-gateway-main/src/main/ngapp/node_modules
+npm install presto-gateway-main/src/main/ngapp/
+npm run-script build --prefix=presto-gateway-main/src/main/ngapp/
+mvn clean package
+
+## Run
+cd docker-gateway
+./build-local.sh
+./gateway up
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 # Presto Gateway
 Presto Gateway is a Policy based query router for **PrestoDB/PrestoSQL** cluster. 
 It sits in front of multiple or single presto clusters and becomes the interface for users. 
