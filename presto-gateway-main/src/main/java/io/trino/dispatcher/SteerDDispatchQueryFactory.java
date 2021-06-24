@@ -1,6 +1,5 @@
 package io.trino.dispatcher;
 
-import com.google.common.util.concurrent.ListeningExecutorService;
 import io.trino.Session;
 import io.trino.execution.QueryPreparer;
 import io.trino.execution.QueryStateMachine;
@@ -19,6 +18,8 @@ import javax.inject.Inject;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Optional;
+import java.util.concurrent.Executor;
 
 import static io.airlift.http.client.HttpUriBuilder.uriBuilderFrom;
 import static io.trino.util.StatementUtils.isTransactionControlStatement;
@@ -27,7 +28,7 @@ import static java.util.Objects.requireNonNull;
 public class SteerDDispatchQueryFactory
         implements DispatchQueryFactory
 {
-    private final ListeningExecutorService executor;
+    private final Executor executor;
 
     private final TransactionManager transactionManager;
     private final AccessControl accessControl;
@@ -82,7 +83,10 @@ public class SteerDDispatchQueryFactory
                 accessControl,
                 executor,
                 metadata,
-                warningCollector);
+                warningCollector,
+                Optional.empty());
+//java.lang.String,java.util.Optional<java.lang.String>,io.trino.Session,java.net.URI,io.trino.spi.resourcegroups.ResourceGroupId,boolean,io.trino.transaction.TransactionManager,io.trino.security.AccessControl,java.util.concurrent.Executor,io.trino.metadata.Metadata,io.trino.execution.warnings.WarningCollector,java.util.Optional<io.trino.spi.resourcegroups.QueryType>
+//java.lang.String,java.util.Optional<java.lang.String>,io.trino.Session,java.net.URI,io.trino.spi.resourcegroups.ResourceGroupId,boolean,io.trino.transaction.TransactionManager,io.trino.security.AccessControl,com.google.common.util.concurrent.ListeningExecutorService,io.trino.metadata.Metadata,io.trino.execution.warnings.WarningCollector
 
         if (session.getTransactionId().isEmpty()) {
             // TODO: make autocommit isolation level a session parameter

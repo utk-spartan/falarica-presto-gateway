@@ -27,25 +27,25 @@
 
     <!-- Plugins -->
     <artifactSet to="plugin/resource-group-managers">
-        <artifact id="${project.groupId}:presto-resource-group-managers:zip:${project.version}">
+        <artifact id="${project.groupId}:trino-resource-group-managers:zip:${project.version}">
             <unpack />
         </artifact>
     </artifactSet>
 
     <artifactSet to="plugin/password-authenticators">
-        <artifact id="${project.groupId}:presto-password-authenticators:zip:${project.version}">
+        <artifact id="${project.groupId}:trino-password-authenticators:zip:${project.version}">
             <unpack />
         </artifact>
     </artifactSet>
 
     <artifactSet to="plugin/session-property-managers">
-        <artifact id="${project.groupId}:presto-session-property-managers:zip:${project.version}">
+        <artifact id="${project.groupId}:trino-session-property-managers:zip:${project.version}">
             <unpack />
         </artifact>
     </artifactSet>
 
     <artifactSet to="plugin/hive-hadoop2">
-        <artifact id="${project.groupId}:presto-hive-hadoop2:zip:${project.version}">
+        <artifact id="${project.groupId}:trino-hive-hadoop2:zip:${project.version}">
             <unpack />
         </artifact>
     </artifactSet>

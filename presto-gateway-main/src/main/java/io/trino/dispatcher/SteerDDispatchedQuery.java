@@ -22,6 +22,7 @@ import io.trino.server.BasicQueryInfo;
 import io.trino.server.protocol.Slug;
 import io.trino.spi.ErrorCode;
 import io.trino.spi.QueryId;
+import io.trino.spi.TrinoException;
 import io.trino.spi.resourcegroups.ResourceGroupId;
 import org.joda.time.DateTime;
 
@@ -203,6 +204,12 @@ public class SteerDDispatchedQuery
     }
 
     @Override
+    public QueryState getState()
+    {
+        return stateMachine.getQueryState();
+    }
+
+    @Override
     public Optional<ErrorCode> getErrorCode()
     {
         return Optional.empty();
@@ -238,6 +245,12 @@ public class SteerDDispatchedQuery
     public Optional<DateTime> getExecutionStartTime()
     {
         return Optional.of(createTime);
+    }
+
+    @Override
+    public Optional<Duration> getPlanningTime()
+    {
+        return Optional.empty();
     }
 
     @Override

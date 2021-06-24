@@ -188,8 +188,9 @@ public class GatewayBasicQueryStats
                 0,
                 0,
                 DataSize.ofBytes(0),
-                0,
-                0,
+                0L,
+                DataSize.ofBytes(0),
+                0D,
                 DataSize.ofBytes(0),
                 DataSize.ofBytes(0),
                 DataSize.ofBytes(0),
@@ -197,7 +198,7 @@ public class GatewayBasicQueryStats
                 new Duration(0, MILLISECONDS),
                 new Duration(0, MILLISECONDS),
                 false,
-                ImmutableSet.of(),
+                Set.of(),
                 OptionalDouble.empty());
     }
 

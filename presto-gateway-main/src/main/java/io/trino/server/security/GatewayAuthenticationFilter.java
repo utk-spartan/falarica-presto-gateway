@@ -14,6 +14,8 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.ws.rs.container.ContainerRequestContext;
+import javax.ws.rs.core.Response;
 
 import java.io.IOException;
 import java.util.LinkedHashSet;
@@ -23,8 +25,7 @@ import java.util.Set;
 
 import static com.google.common.net.HttpHeaders.WWW_AUTHENTICATE;
 import static io.trino.server.ServletSecurityUtils.sendErrorMessage;
-import static io.trino.server.ServletSecurityUtils.skipRequestBody;
-import static io.trino.server.ServletSecurityUtils.withAuthenticatedIdentity;
+import static io.trino.server.ServletSecurityUtils.setAuthenticatedIdentity;
 import static io.trino.server.security.BasicAuthCredentials.extractBasicAuthCredentials;
 import static java.util.Objects.requireNonNull;
 import static javax.servlet.http.HttpServletResponse.SC_FORBIDDEN;
@@ -76,7 +77,7 @@ public class GatewayAuthenticationFilter
         for (Authenticator authenticator : authenticators) {
             Identity authenticatedIdentity;
             try {
-                authenticatedIdentity = authenticator.authenticate(request);
+                authenticatedIdentity = authenticator.authenticate((ContainerRequestContext) request);
             }
             catch (AuthenticationException e) {
                 if (e.getMessage() != null) {
@@ -87,12 +88,12 @@ public class GatewayAuthenticationFilter
             }
 
             // authentication succeeded
-            withAuthenticatedIdentity(nextFilter, request, response, authenticatedIdentity);
+            setAuthenticatedIdentity((ContainerRequestContext) request, authenticatedIdentity);
             return;
         }
 
         // authentication failed
-        skipRequestBody(request);
+//        skipRequestBody(request);
 
         for (String value : authenticateHeaders) {
             response.addHeader(WWW_AUTHENTICATE, value);
@@ -105,7 +106,7 @@ public class GatewayAuthenticationFilter
         // The error string is used by clients for exception messages and
         // is presented to the end user, thus it should be a single line.
         String error = Joiner.on(" | ").join(messages);
-        sendErrorMessage(response, SC_UNAUTHORIZED, error);
+        sendErrorMessage((ContainerRequestContext) request, Response.Status.fromStatusCode(SC_UNAUTHORIZED), error);
     }
 
     private static void handleInsecureRequest(FilterChain nextFilter, HttpServletRequest request, HttpServletResponse response)
@@ -113,10 +114,10 @@ public class GatewayAuthenticationFilter
     {
         Optional<BasicAuthCredentials> basicAuthCredentials;
         try {
-            basicAuthCredentials = extractBasicAuthCredentials(request);
+            basicAuthCredentials = extractBasicAuthCredentials((ContainerRequestContext) request);
         }
         catch (AuthenticationException e) {
-            sendErrorMessage(response, SC_FORBIDDEN, e.getMessage());
+            sendErrorMessage((ContainerRequestContext) request, Response.Status.fromStatusCode(SC_FORBIDDEN), e.getMessage());
             return;
         }
 
@@ -126,11 +127,11 @@ public class GatewayAuthenticationFilter
         }
 
         if (basicAuthCredentials.get().getPassword().isPresent()) {
-            sendErrorMessage(response, SC_FORBIDDEN, "Password not allowed for insecure request");
+            sendErrorMessage((ContainerRequestContext) request, Response.Status.fromStatusCode(SC_FORBIDDEN), "Password not allowed for insecure request");
             return;
         }
 
-        withAuthenticatedIdentity(nextFilter, request, response, Identity.ofUser(basicAuthCredentials.get().getUser()));
+        setAuthenticatedIdentity((ContainerRequestContext) request, Identity.ofUser(basicAuthCredentials.get().getUser()));
     }
 
     private boolean doesRequestSupportAuthentication(HttpServletRequest request)

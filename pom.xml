@@ -40,6 +40,7 @@
         <dep.drift.version>1.14</dep.drift.version>
         <maven.compiler.source>11</maven.compiler.source>
         <maven.compiler.target>11</maven.compiler.target>
+        <trino.version>357</trino.version>
     </properties>
 
     <modules>

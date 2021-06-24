@@ -21,11 +21,12 @@ import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.ws.rs.container.ContainerRequestContext;
 
 import java.io.IOException;
 
 import static io.trino.gateway.ui.FormWebUiAuthenticationManager.redirectAllFormLoginToUi;
-import static io.trino.server.ServletSecurityUtils.withAuthenticatedIdentity;
+import static io.trino.server.ServletSecurityUtils.setAuthenticatedIdentity;
 import static java.util.Objects.requireNonNull;
 
 public class FixedUserWebUiAuthenticationManager
@@ -52,7 +53,7 @@ public class FixedUserWebUiAuthenticationManager
             return;
         }
 
-        withAuthenticatedIdentity(nextFilter, request, response, webUiIdentity);
+        setAuthenticatedIdentity((ContainerRequestContext) request, webUiIdentity);
     }
 
     private static Identity basicIdentity(String username)

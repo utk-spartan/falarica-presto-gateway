@@ -37,7 +37,6 @@ import io.trino.metadata.StaticCatalogStore;
 import io.trino.security.GroupProviderManager;
 import io.trino.security.SteerDAccessControlManager;
 import io.trino.security.SteerDAccessControlModule;
-import io.trino.server.GatewayPluginManager;
 import io.trino.server.security.GatewaySecurityModule;
 import io.trino.server.security.PasswordAuthenticatorManager;
 import org.weakref.jmx.guice.MBeanModule;
@@ -70,7 +69,6 @@ public final class PrestoGateway
         Logger log = Logger.get(PrestoGateway.class);
         try {
             injector = app.strictConfig().initialize();
-            injector.getInstance(GatewayPluginManager.class).loadPlugins();
             injector.getInstance(ResourceGroupManager.class).loadConfigurationManager();
             injector.getInstance(SteerDAccessControlManager.class).loadSystemAccessControl();
             injector.getInstance(PasswordAuthenticatorManager.class).loadPasswordAuthenticator();

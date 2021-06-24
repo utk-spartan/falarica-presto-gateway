@@ -4,6 +4,8 @@ import com.google.inject.Binder;
 import com.google.inject.Scopes;
 import com.google.inject.multibindings.MapBinder;
 import io.airlift.http.server.TheServlet;
+import io.trino.server.security.jwt.JwtAuthenticator;
+import io.trino.server.security.jwt.JwtAuthenticatorConfig;
 
 import javax.servlet.Filter;
 
@@ -30,7 +32,7 @@ public class GatewaySecurityModule
         installAuthenticator("certificate", CertificateAuthenticator.class, CertificateConfig.class);
         installAuthenticator("kerberos", KerberosAuthenticator.class, KerberosConfig.class);
         installAuthenticator("password", PasswordAuthenticator.class, PasswordAuthenticatorConfig.class);
-        installAuthenticator("jwt", JsonWebTokenAuthenticator.class, JsonWebTokenConfig.class);
+        installAuthenticator("jwt", JwtAuthenticator.class, JwtAuthenticatorConfig.class);
     }
 
     private void installAuthenticator(String name, Class<? extends Authenticator> authenticator, Class<?> config)

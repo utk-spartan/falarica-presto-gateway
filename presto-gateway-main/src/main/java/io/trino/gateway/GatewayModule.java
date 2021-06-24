@@ -82,8 +82,6 @@ import io.trino.operator.OperatorStats;
 import io.trino.operator.PagesIndex;
 import io.trino.plugin.resourcegroups.db.DbResourceGroupConfig;
 import io.trino.server.ExpressionSerialization;
-import io.trino.server.GatewayPluginManager;
-import io.trino.server.PluginManagerConfig;
 import io.trino.server.QuerySessionSupplier;
 import io.trino.server.SessionPropertyDefaults;
 import io.trino.server.SessionSupplier;
@@ -104,7 +102,6 @@ import io.trino.sql.analyzer.FeaturesConfig;
 import io.trino.sql.gen.JoinCompiler;
 import io.trino.sql.gen.OrderingCompiler;
 import io.trino.sql.parser.SqlParser;
-import io.trino.sql.parser.SqlParserOptions;
 import io.trino.sql.planner.NodePartitioningManager;
 import io.trino.sql.planner.TypeAnalyzer;
 import io.trino.sql.tree.Expression;
@@ -189,8 +186,7 @@ public class GatewayModule
         binder.bind(ResourceGroupManager.class).to(InternalResourceGroupManager.class);
         binder.bind(LegacyResourceGroupConfigurationManager.class).in(Scopes.SINGLETON);
 
-        configBinder(binder).bindConfig(PluginManagerConfig.class);
-        binder.bind(GatewayPluginManager.class).in(Scopes.SINGLETON);
+//        configBinder(binder).bindConfig(PluginManagerConfig.class);
 
         configBinder(binder).bindConfig(QueryManagerConfig.class);
         configBinder(binder).bindConfig(TaskManagerConfig.class);
@@ -200,9 +196,9 @@ public class GatewayModule
         configBinder(binder).bindConfig(SqlEnvironmentConfig.class);
 
         binder.bind(SqlParser.class).in(Scopes.SINGLETON);
-        SqlParserOptions sqlParserOptions = new SqlParserOptions();
-        //sqlParserOptions.useEnhancedErrorHandler(serverConfig.isEnhancedErrorReporting());
-        binder.bind(SqlParserOptions.class).toInstance(sqlParserOptions);
+//        SqlParserOptions sqlParserOptions = new SqlParserOptions();
+//        //sqlParserOptions.useEnhancedErrorHandler(serverConfig.isEnhancedErrorReporting());
+//        binder.bind(SqlParserOptions.class).toInstance(sqlParserOptions);
 
         //binder.bind(StaticCatalogStore.class).in(Scopes.SINGLETON);
         //configBinder(binder).bindConfig(StaticCatalogStoreConfig.class);

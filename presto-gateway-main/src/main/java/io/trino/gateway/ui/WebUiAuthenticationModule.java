@@ -21,11 +21,11 @@ import io.airlift.configuration.AbstractConfigurationAwareModule;
 import io.trino.server.security.Authenticator;
 import io.trino.server.security.CertificateAuthenticator;
 import io.trino.server.security.CertificateConfig;
-import io.trino.server.security.JsonWebTokenAuthenticator;
-import io.trino.server.security.JsonWebTokenConfig;
 import io.trino.server.security.KerberosAuthenticator;
 import io.trino.server.security.KerberosConfig;
 import io.trino.server.security.SecurityConfig;
+import io.trino.server.security.jwt.JwtAuthenticator;
+import io.trino.server.security.jwt.JwtAuthenticatorConfig;
 
 import java.util.List;
 
@@ -50,7 +50,7 @@ public class WebUiAuthenticationModule
 
         installWebUiAuthenticator("certificate", CertificateAuthenticator.class, CertificateConfig.class);
         installWebUiAuthenticator("kerberos", KerberosAuthenticator.class, KerberosConfig.class);
-        installWebUiAuthenticator("jwt", JsonWebTokenAuthenticator.class, JsonWebTokenConfig.class);
+        installWebUiAuthenticator("jwt", JwtAuthenticator.class, JwtAuthenticatorConfig.class);
     }
 
     private void installWebUiAuthenticator(String type, Module module)

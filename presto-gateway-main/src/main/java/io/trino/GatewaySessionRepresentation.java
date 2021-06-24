@@ -16,6 +16,7 @@ package io.trino;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.common.collect.ImmutableMap;
+import io.trino.client.ProtocolHeaders;
 import io.trino.connector.CatalogName;
 import io.trino.metadata.SessionPropertyManager;
 import io.trino.spi.QueryId;
@@ -315,6 +316,7 @@ public final class GatewaySessionRepresentation
                 catalogProperties,
                 unprocessedCatalogProperties,
                 sessionPropertyManager,
-                preparedStatements);
+                preparedStatements,
+                ProtocolHeaders.TRINO_HEADERS);
     }
 }
