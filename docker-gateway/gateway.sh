@@ -8,13 +8,19 @@ pushd ${SCRIPTPATH}
 
 # Move to the root directory to run maven for current version.
 pushd ..
-export GATEWAY_VERSION=$(./mvnw --quiet help:evaluate -Dexpression=project.version -DforceStdout)
+export GATEWAY_VERSION=$(./mvnw --quiet help:evaluate -Dexpression=trino.version -DforceStdout)
 popd
 export HADOOP_HIVE_ENV_FILE=${SCRIPTPATH}/hive/hadoop-hive.env
 export PGPASSWORD=root123
 export GATEWAY_CONFIG_DIR=${SCRIPTPATH}/default/etc
 export PRESTO_CONFIG_DIR=${SCRIPTPATH}/default/presto/etc
 export PRESTO_CONFIG_DIR2=${SCRIPTPATH}/default/presto2/etc
+
+mkdir -p ${SCRIPTPATH}/hivedata
+mkdir -p ${SCRIPTPATH}/gatewaydata
+mkdir -p ${SCRIPTPATH}/steerddata
+
+
 
 # create a temporary directory that can be mounted on prestoserver
 mkdir -p /tmp/filedata
@@ -44,7 +50,7 @@ if [ -z $1 ]; then
     exit 0
 elif [ "$1" = "up" ]; then
     if [ -z $2 ]; then
-       docker-compose  up -d  hivemetastore steerdmetastore prestoserver gateway
+       docker-compose  up -d steerdmetastore gateway
     elif [ "$2" = "1" ]; then
         docker-compose up -d hivemetastore steerdmetastore
     elif [ "$2" = "2" ]; then

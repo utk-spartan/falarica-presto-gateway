@@ -14,7 +14,7 @@ cd ${SCRIPT_DIR}
 
 # Move to the root directory to run maven for current version.
 pushd ..
-GATEWAY_VERSION=$(./mvnw --quiet help:evaluate -Dexpression=project.version -DforceStdout)
+GATEWAY_VERSION=$(./mvnw --quiet help:evaluate -Dexpression=trino.version -DforceStdout)
 popd
 
 WORK_DIR="$(mktemp -d)"
