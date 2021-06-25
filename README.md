@@ -1,23 +1,33 @@
 # Build
 -- setup env
 jdk11
+
 maven
+
 npm
+
 ---updates npm
+
 npm -i -g npm
 
 ## Compile
+
 ---- 
 rm -rf node_modules && rm -f package-lock.json package.json && rm -rf presto-gateway-main/src/main/ngapp/node_modules
+
 npm install presto-gateway-main/src/main/ngapp/
+
 npm run-script build --prefix=presto-gateway-main/src/main/ngapp/
+
 mvn clean package
+
 
 ## Run
 cd docker-gateway
-./build-local.sh
-./gateway up
 
+./build-local.sh
+
+./gateway up
 
 
 
